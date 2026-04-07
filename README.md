@@ -108,6 +108,55 @@ $cred = Get-Credential
 Get-ADUserStatus -Identity jdoe -Credential $cred
 ```
 
+### `Reset-ADUserPassword`
+
+Resets a user's password. Optionally forces a password change at next logon.
+
+```powershell
+$pwd = Read-Host "New password" -AsSecureString
+Reset-ADUserPassword -Identity jdoe -NewPassword $pwd
+Reset-ADUserPassword -Identity jdoe -NewPassword $pwd -MustChangePasswordAtLogon
+```
+
+---
+
+### `Get-ADGroupMembers`
+
+Lists all members of a group. Use `-Recursive` to expand nested groups.
+
+```powershell
+Get-ADGroupMembers -Identity "VPN-Users"
+Get-ADGroupMembers -Identity "Domain Admins" -Recursive
+```
+
+---
+
+### `Get-ADLockedOutUsers`
+
+Returns all locked-out user accounts across the domain, or scoped to an OU.
+
+```powershell
+Get-ADLockedOutUsers
+Get-ADLockedOutUsers -SearchBase "OU=Employees,DC=contoso,DC=com"
+```
+
+---
+
+### `Get-ADComputerStatus`
+
+Returns status information for a computer account.
+
+```powershell
+Get-ADComputerStatus -Identity DESKTOP-01
+
+# Pipeline support
+"DESKTOP-01","LAPTOP-02" | Get-ADComputerStatus
+```
+
+**Output includes:** `Name`, `DNSHostName`, `Enabled`, `OperatingSystem`, `OperatingSystemVersion`, `IPv4Address`, `LastLogonDate`, `Description`, `Created`, `Modified`, `Groups`
+
+---
+
 ## Adding New Functions
 
 1. Create a new `.ps1` file in `ADTools\Public\` named after the function (e.g. `Reset-ADUserPassword.ps1`)
