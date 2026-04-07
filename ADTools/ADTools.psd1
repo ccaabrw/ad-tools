@@ -69,9 +69,11 @@ PowerShellVersion = '5.1'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Get-ADUserStatus', 'Add-ADGroupMembership', 
-               'Remove-ADGroupMembership', 'Unlock-ADUserAccount', 
-               'Disable-ADUserAccount', 'Enable-ADUserAccount'
+FunctionsToExport = 'Get-ADUserStatus', 'Add-ADGroupMembership',
+               'Remove-ADGroupMembership', 'Unlock-ADUserAccount',
+               'Disable-ADUserAccount', 'Enable-ADUserAccount',
+               'Reset-ADUserPassword', 'Get-ADGroupMembers',
+               'Get-ADLockedOutUsers', 'Get-ADComputerStatus'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = '*'
