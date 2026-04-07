@@ -2,23 +2,44 @@
 
 ## Project Overview
 
-A collection of PowerShell scripts for querying and managing Active Directory objects, including user status queries and group membership management.
+A PowerShell module (**ADTools**) for querying and managing Active Directory objects, including user status queries and group membership management.
 
 ## Architecture
 
-- Scripts are standalone `.ps1` files targeting specific AD operations (e.g., user queries, group management).
-- All AD interaction uses cmdlets from the **ActiveDirectory** module (`Import-Module ActiveDirectory`). Do not use ADSI/LDAP directly.
-- Scripts are designed to run on Windows hosts with the AD module available (RSAT or domain controller).
-- Scripts assume the running user context is already authenticated to the domain — no credential loading required. Scripts may include an optional `-Credential` parameter for cases where alternate credentials are needed, but it should never be mandatory.
+```
+ADTools/
+  ADTools.psd1       # Module manifest
+  ADTools.psm1       # Root module — imports ActiveDirectory, dot-sources Public/
+  Public/            # One .ps1 file per exported function
+    Get-ADUserStatus.ps1
+    Add-ADGroupMembership.ps1
+    Remove-ADGroupMembership.ps1
+    Unlock-ADUserAccount.ps1
+    Disable-ADUserAccount.ps1
+    Enable-ADUserAccount.ps1
+```
+
+- `ADTools.psm1` dot-sources all files in `Public\` and calls `Export-ModuleMember`. New functions go in `Public\` as their own `.ps1` file.
+- All AD interaction uses cmdlets from the **ActiveDirectory** module. Do not use ADSI/LDAP directly. The module is imported once in `ADTools.psm1` — do not re-import it inside individual function files.
+- Runs on Windows hosts with the AD module available (RSAT or domain controller).
+- Functions assume the running user context is already authenticated to the domain. An optional `-Credential` parameter may be included for alternate credentials but must never be mandatory.
+
+## Usage
+
+```powershell
+Import-Module .\ADTools\ADTools.psd1
+Get-ADUserStatus -Identity jdoe
+Add-ADGroupMembership -UserIdentity jdoe -GroupIdentity "VPN-Users"
+```
 
 ## Conventions
 
-- Always import the AD module at the top of each script: `Import-Module ActiveDirectory -ErrorAction Stop`
+- Each exported function lives in its own file under `Public\`, named `Verb-Noun.ps1` matching the function name.
 - Use `-ErrorAction Stop` on AD cmdlets so errors are catchable with `try/catch`.
-- Accept input via parameters (not hard-coded values); use `[CmdletBinding()]` and `param()` blocks.
+- Accept input via parameters; use `[CmdletBinding()]` and `param()` blocks.
+- Use `SupportsShouldProcess` on all functions that modify AD objects (supports `-WhatIf`).
 - Output objects (not formatted strings) so callers can pipe results — use `Write-Output` or return objects, not `Write-Host` for data.
-- Use `Write-Host` or `Write-Verbose` only for status/progress messages, not for data output.
-- Name scripts as `Verb-NounTarget.ps1` following PowerShell verb conventions (`Get-`, `Set-`, `Add-`, `Remove-`).
+- Use `Write-Verbose` for status/progress messages, not `Write-Host`.
 
 ## Common AD Module Cmdlets Used
 
