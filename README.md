@@ -84,30 +84,6 @@ Enable-ADUserAccount -Identity jdoe
 
 ---
 
-## Common Options
-
-All functions support:
-
-- **`-Credential`** — optional alternate credentials (defaults to current user context)
-- **`-WhatIf`** — preview changes without applying them (write operations only)
-- **`-Verbose`** — show detailed status messages
-- **Pipeline input** — pipe usernames or objects directly into any function
-
-## Examples
-
-```powershell
-# Check if a user is locked out, then unlock them
-$status = Get-ADUserStatus -Identity jdoe
-if ($status.LockedOut) { Unlock-ADUserAccount -Identity jdoe }
-
-# Preview disabling multiple users before applying
-"jdoe", "jsmith" | Disable-ADUserAccount -WhatIf
-
-# Use alternate credentials
-$cred = Get-Credential
-Get-ADUserStatus -Identity jdoe -Credential $cred
-```
-
 ### `Reset-ADUserPassword`
 
 Resets a user's password. Optionally forces a password change at next logon.
@@ -156,6 +132,37 @@ Get-ADComputerStatus -Identity DESKTOP-01
 **Output includes:** `Name`, `DNSHostName`, `Enabled`, `OperatingSystem`, `OperatingSystemVersion`, `IPv4Address`, `LastLogonDate`, `Description`, `Created`, `Modified`, `Groups`
 
 ---
+
+## Common Options
+
+All functions support:
+
+- **`-Credential`** — optional alternate credentials (defaults to current user context)
+- **`-Verbose`** — show detailed status messages
+
+Write operations (`Add/Remove-ADGroupMembership`, `Unlock/Disable/Enable-ADUserAccount`, `Reset-ADUserPassword`) also support:
+
+- **`-WhatIf`** — preview changes without applying them
+
+Most functions accept pipeline input for their primary identity parameter.
+
+## Examples
+
+```powershell
+# Check if a user is locked out, then unlock them
+$status = Get-ADUserStatus -Identity jdoe
+if ($status.LockedOut) { Unlock-ADUserAccount -Identity jdoe }
+
+# Preview disabling multiple users before applying
+"jdoe", "jsmith" | Disable-ADUserAccount -WhatIf
+
+# Use alternate credentials
+$cred = Get-Credential
+Get-ADUserStatus -Identity jdoe -Credential $cred
+
+# Find and unlock all locked-out users
+Get-ADLockedOutUsers | Unlock-ADUserAccount
+```
 
 ## Adding New Functions
 
